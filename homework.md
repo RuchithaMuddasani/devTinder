@@ -10,3 +10,14 @@ What are dependencies?
 what is the use of "-g" in npm install
 Difference between caret(^) and tilde(~)
 Version lookup -->
+
+
+initialize git
+.gitignore
+create a remote repo on github
+push all code to remote origin
+play with routes and route-extensions(ex: /hello, /hello/2, /)
+***order of the routes matter alot***
+
+Install postman and make a workspace/collection > test get call route
+
