@@ -2,30 +2,25 @@ const express = require("express");
 
 const app = express();
 
-app.get("/user", (req, res) => {
-    res.send("Hello get server!!")
-})
+const { adminAuth } = require("./middlewares/auth.js");
 
-app.post("/user", (req, res) => {
-    res.send("Hello post server!!")
-})
+// Apply admin authentication middleware to all /admin routes
+app.use("/admin", adminAuth);
 
-app.put("/user", (req, res) => {
-    res.send("Hello put server!!")
-})
 
-app.patch("/user", (req, res) => {
-    res.send("Hello patch server!!")
-})
+// Admin route 1
+app.get("/admin/getAllData", (req, res) => {
+    res.send("Authorized user");
+});
 
-app.delete("/user", (req, res) => {
-    res.send("Hello delete server!!")
-})
 
-app.use("/test", (req, res) => {
-    res.send("Test server!!")
-})
+// Admin route 2
+app.get("/admin/deleteUser", (req, res) => {
+    res.send("Deleted a user");
+});
 
-app.listen(7777,()=>{
-    console.log("Server is running on port 7777...");
+
+// Start server
+app.listen(7777, () => {
+    console.log("Server is running on port 7777");
 });
