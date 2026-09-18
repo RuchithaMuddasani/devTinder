@@ -1,26 +1,28 @@
 const express = require("express");
-
+const connectDB = require("./config/database");
 const app = express();
+const User = require("./models/user");
 
-const { adminAuth } = require("./middlewares/auth.js");
+app.use(express.json());
 
-// Apply admin authentication middleware to all /admin routes
-app.use("/admin", adminAuth);
+app.post("/signup", async (req,res)=>{
 
+    const user = new User(req.body);
 
-// Admin route 1
-app.get("/admin/getAllData", (req, res) => {
-    res.send("Authorized user");
-});
+    await user.save();
+    res.send("User added successfully!!")
+}) 
 
+connectDB()
+    .then(()=>{
+        console.log("Database connection established!!");
+        // Start server
+        app.listen(7777, () => {
+            console.log("Server is running on port 7777");
+        });
+    })
+    .catch(err => {
+        console.log("Database is not connected!!");
+    })
 
-// Admin route 2
-app.get("/admin/deleteUser", (req, res) => {
-    res.send("Deleted a user");
-});
-
-
-// Start server
-app.listen(7777, () => {
-    console.log("Server is running on port 7777");
-});
+    
