@@ -4,13 +4,62 @@ const app = express();
 const User = require("./models/user");
 app.use(express.json());
 
+const {validateSignUp} = require("./utils/validation");
+const bcrypt = require("bcrypt");
+
+//Login 
+app.post("/login", async (req,res) => {
+    try{
+
+        const{email, password} = req.body;
+
+        //check if user exists in the DB
+        const user = await User.findOne({email});
+        if(!user){
+            throw new Error("Invalid Credentials");
+        }
+
+        //creating valid password
+        const isValidPassword = await bcrypt.compare(password, user.password);
+
+        //check if password is valid
+        if(isValidPassword){
+            res.send("Login Successfull!!");
+        }
+        else{
+            throw new Error("Invalid Credentials");
+        }
+    }
+    catch(err){
+        res.status(400).send("ERROR: " + err.message);
+    }
+})
+
 //To post data into DB
 app.post("/signup", async (req,res)=>{
 
-    const user = new User(req.body);
+    try{
+    //validate the user
+    validateSignUp(req); 
+
+    //Encrypt the password
+    const {firstName, lastName, email, password} = req.body;
+    const passwordHash = await bcrypt.hash(password, 10);
+    console.log(passwordHash);
+
+    //creating a new instance of the User Model 
+    const user = new User({
+        firstName,
+        lastName,
+        email,
+        password : passwordHash
+    });
 
     await user.save();
     res.send("User added successfully!!")
+    }catch(err){
+        res.status(400).send("ERROR: "  + err.message);
+    }
 }) 
 
 //Feed API- GET /FEED- to get all the users from the DB
@@ -77,6 +126,7 @@ connectDB()
     })
     .catch(err => {
         console.log("Database is not connected!!");
+        console.log(err);
     })
 
     
